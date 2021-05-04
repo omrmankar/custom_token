@@ -1,0 +1,63 @@
+<?php
+
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\image\Entity\ImageStyle;
+
+/**
+ * Implements hook_token_info()
+ * @return array
+ */
+
+function custom_token_token_info()
+{
+
+  $info['tokens']['site']['absolute_url'] = array(
+    'name' => t('Absolute URL'),
+    'description' => t('Url of the site, no language prefix garanted'),
+  );
+
+  $info['tokens']['site']['custom_image_token'] = array(
+    'name' => t("customimagetoken"),
+    'description' => t("Custom image token.")
+  );
+  return $info;
+}
+
+
+/**
+ * Implements hook_tokens()
+ * @param $type
+ * @param $tokens
+ * @param array $data
+ * @param array $options
+ * @param \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata
+ * @return array
+ */
+
+function custom_token_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata)
+{
+  $replacements = array();
+  global $base_root;
+
+
+  foreach ($tokens as $name => $original) {
+    switch ($name) {
+      case 'absolute_url':
+        $replacements[$original] = $base_root;
+        break;
+      case 'custom_image_token':
+        if($node->getType() == 'article'){
+          if(isset($node->get('field_image')->entity)){
+            $image_style = 'large';
+            $style = ImageStyle::load($image_style);
+            $url_final = $style->buildUrl($node->get('field_image')->entity->getFileUri());
+          }
+        }
+        $replacements[$original] = $url_final;
+        break;
+    }
+  }
+
+
+  return $replacements;
+}

@@ -1,0 +1,6 @@
+name: Custom Token
+type: module
+description: "Example How to create custom token"
+package: Custom
+core: 8.x
+core_version_requirement: ^8 || ^9
